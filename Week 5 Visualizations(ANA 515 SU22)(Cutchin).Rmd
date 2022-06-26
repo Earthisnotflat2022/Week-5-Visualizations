@@ -1,0 +1,64 @@
+---
+title: "Week 5 Visualizations Assignment_Star Wars (ANA515 SU22)(Andrew Cutchin)"
+author: "Andrew Cutchin"
+date: "`r Sys.Date()`"
+output: 
+  word_document: default
+  html_document:
+    theme:
+      bootswatch: slate
+---
+
+```{r , include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include = FALSE}
+#install.packages("tidyverse")
+#install.packages("knitr")
+#install.packages("bslib")
+```
+
+```{r , include = FALSE}
+library(tidyverse)
+library(knitr)
+library(bslib)
+library(ggplot2)
+```
+
+```{r , include = FALSE}
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/star-wars-survey/StarWars.csv"
+starwars_survey <- read_csv(url, locale=locale(encoding="latin1"))
+glimpse(starwars_survey)
+```
+
+```{r , include = FALSE}
+starwars_survey1<-(rename(starwars_survey, "Which of the following Star Wars films have you seen? Please select all that apply. Viewed Episode One"="Which of the following Star Wars films have you seen? Please select all that apply.", "Viewed Episode Two"=...5, "Viewed Episode Three"=...6, "Viewed Episode Four"=...7, "Viewed Episode Five"=...8, "Viewed Episode Six"=...9, "Please rank the Star Wars films in order of preference with 1 being your favorite film in the franchise and 6 being your least favorite film. Rank - Episode 1:Phantom Menace"="Please rank the Star Wars films in order of preference with 1 being your favorite film in the franchise and 6 being your least favorite film.", "Rank - Episode 2:The Attack of the Clones"=...11, "Rank - Episode 3:Revenge of the Sith"=...12, "Rank - Episode 4:A New Hope"=...13, "Rank - Episode 5:The Empire Strikes Back"=...14, "Rank - Episode 6:Return of the Jedi"=...15, "Please state whether you view the following characters favorably, unfavorably, or are unfamiliar with him/her. Rating:Han Solo"="Please state whether you view the following characters favorably, unfavorably, or are unfamiliar with him/her.", "Rating:Luke Skywalker"=...17, "Rating:Princess Leia Organa"=...18, "Rating:Anakin Skywalker"=...19, "Rating:Obi Wan Kenobi"=...20, "Rating:Emporer Palpatine"=...21, "Rating:Darth Vader"=...22,"Rating:Lando Calrissian"=...23, "Rating:Boba Fett"=...24, "Rating:C-3PO"=...25, "Rating:R2-D2"=...26, "Rating:Jar Jar Binks"=...27, "Rating:Padme Amidala"=...28, "Rating:Yoda"=...29))%>%
+   slice(-1)
+```
+
+```{r, include=FALSE}
+#This chunk limits the responses to those that self reported seeing at least one of the first six main Star Wars movies, Episodes 1-6.
+starwars_survey_visual<-filter(starwars_survey1, `Have you seen any of the 6 films in the Star Wars franchise?`=="Yes")
+```
+
+`This scatterplot shows the mapping of Age on the x-axis, Education for the y-axis, and color indicates the Gender of the respondent.  The scale of the x-axis had to be altered to go youngest to oldest, from left to right.  The y-axis was reordered to show increasing level of education when moving upwards.`
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Scatterplot
+ggplot(data = starwars_survey_visual) + 
+  geom_jitter(mapping = aes(x = Age, y = Education, color = Gender))+
+  scale_x_discrete(limits=c("18-29", "30-44", "45-60", "> 60"))+
+  scale_y_discrete(limits=c("Less than high school degree", "High school degree", "Some college or Associate degree", "Bachelor degree", "Graduate degree"))
+```
+
+`This bar chart shows the count of the ranking by each respondent of the Star Wars movie, Episode 1:The Phantom Menace.  The x-axis shows the ranking 1-6, 1 being the highest and 6 being the lowest.  Each repondent was supposed to rate each of the six films by numbering them from 1-6.  All respondents that did not rate this film in there responses were removed.  The y-axis shows the count of each rating among respondents.  Each count is broken up into age groups of the respondent whom made that particular rating.` 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data=starwars_survey_visual)+
+  geom_bar(mapping = aes(x = `Please rank the Star Wars films in order of preference with 1 being your favorite film in the franchise and 6 being your least favorite film. Rank - Episode 1:Phantom Menace`, fill= Age), position = "dodge")+
+  labs(title = "Fan Rankings - Episode 1", x = "Ranking - Episode 1: The Phantom Menace(1=Highest)")+
+  scale_x_discrete(limits=c("1", "2", "3", "4", "5", "6"))
+```
+
+
